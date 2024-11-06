@@ -47,6 +47,7 @@ def get_submission_ensemble(models: list[Model], weights: list[float], test_data
 
 @torch.no_grad()
 def save_test_submission_ensemble(models: list[Model], weights: list[float], name: str):
+    os.makedirs("submissions", exist_ok=True)
     sub = get_submission_ensemble(models, weights, get_test_data().to(models[0].device())).rename({"ride_id": "testcase_id"})
     sub.write_csv(os.path.join("submissions", f"{name}.csv"), float_precision=2)
     with open(os.path.join("submissions", f"{name}.csv"), "rb") as src:

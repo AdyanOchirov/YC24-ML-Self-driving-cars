@@ -260,6 +260,7 @@ def val_loss(model: Model, data: TestData):
 
 @torch.no_grad()
 def save_test_submission(model: Model, name: str):
+    os.makedirs("submissions", exist_ok=True)
     sub = get_submission(model, get_test_data().to(model.device())).rename({"ride_id": "testcase_id"})
     sub.write_csv(os.path.join("submissions", f"{name}.csv"), float_precision=2)
     with open(os.path.join("submissions", f"{name}.csv"), "rb") as src:
@@ -273,7 +274,7 @@ def set_seed(seed: int):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-def train(name, epochs, batch_size, lr, pct_start, seed, val_freq,  device="cuda"):
+def train(name, epochs, batch_size, lr, pct_start, seed, val_freq, device="cuda"):
     set_seed(seed)
 
     model = Model().to(device)
@@ -304,7 +305,6 @@ def train(name, epochs, batch_size, lr, pct_start, seed, val_freq,  device="cuda
         pbar.update()
 
     os.makedirs("models", exist_ok=True)
-    os.makedirs("submissions", exist_ok=True)
     torch.save(model.state_dict(), os.path.join("models", f"{name}.pt"))
     save_test_submission(model, name)
 
